@@ -70,7 +70,7 @@ const objectTranslations = {
     'curtain': 'rèm cửa'
 };
 
-// Function to get device GPS location and format as Google Maps link
+// Function to get device GPS location and format as a raw Google Maps URL
 function getLocation() {
     return new Promise((resolve) => {
         if (!navigator.geolocation) {
@@ -84,7 +84,7 @@ function getLocation() {
                 const { latitude, longitude } = position.coords;
                 console.log('GPS coordinates:', { latitude, longitude });
                 const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                resolve(`[View on Google Maps](${mapsLink})`);
+                resolve(mapsLink); // Return raw URL
             },
             (error) => {
                 console.warn('Geolocation error:', error.message);
