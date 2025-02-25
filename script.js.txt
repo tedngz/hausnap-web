@@ -1,0 +1,47 @@
+document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
+
+function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('photoPreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            generateDescription(file);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function generateDescription(file) {
+    // Simulate AI analysis (replace with real API/model in production)
+    const roomTypes = ['Living Room', 'Bedroom', 'Kitchen', 'Bathroom'];
+    const features = [
+        'hardwood floors', 'large windows', 'modern appliances', 
+        'cozy sofa', 'marble countertop', 'high ceilings'
+    ];
+    
+    const randomRoom = roomTypes[Math.floor(Math.random() * roomTypes.length)];
+    const randomFeatures = features.sort(() => 0.5 - Math.random()).slice(0, 3).join(', ');
+    
+    const description = `Spacious ${randomRoom} with ${randomFeatures}. Perfectly lit and stylish!`;
+    
+    const descriptionText = document.getElementById('descriptionText');
+    descriptionText.textContent = description;
+    document.getElementById('descriptionBox').style.display = 'block';
+
+    setupShareButton(description);
+}
+
+function setupShareButton(description) {
+    const shareButton = document.getElementById('shareButton');
+    shareButton.onclick = function() {
+        const photoUrl = document.getElementById('photoPreview').src;
+        const shareText = `${description} Check out this room!`;
+        
+        // Simulate Facebook share (replace with real FB SDK in production)
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(fbShareUrl, '_blank', 'width=600,height=400');
+    };
+}
