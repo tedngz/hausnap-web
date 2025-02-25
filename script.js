@@ -49,6 +49,25 @@ function handlePhotoUpload(event) {
     reader.readAsDataURL(file);
 }
 
+// Object translation mapping (English to Vietnamese)
+const objectTranslations = {
+    'bed': 'giường',
+    'sofa': 'ghế sofa',
+    'television': 'tivi',
+    'table': 'bàn',
+    'chair': 'ghế',
+    'lamp': 'đèn',
+    'window': 'cửa sổ',
+    'sink': 'bồn rửa',
+    'oven': 'lò nướng',
+    'refrigerator': 'tủ lạnh',
+    'closet': 'tủ quần áo',
+    'mirror': 'gương',
+    'door': 'cửa',
+    'rug': 'thảm',
+    'curtain': 'rèm cửa'
+};
+
 async function generateDescription(imageData) {
     const descriptionText = document.getElementById('descriptionText');
     const descriptionBox = document.getElementById('descriptionBox');
@@ -71,7 +90,7 @@ async function generateDescription(imageData) {
     };
 
     try {
-        console.log('Sending request to Vision API with body:', requestBody);
+        console.log('Sending request to Vision API...');
         const response = await fetch(VISION_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -79,11 +98,12 @@ async function generateDescription(imageData) {
         });
 
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            throw new Error(`API request failed with status ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
-        console.log('Raw API response:', data);
+        console.log('Raw API response:', JSON.stringify(data, null, 2));
 
         let allFeatures = [];
         let objectList = [];
@@ -91,15 +111,11 @@ async function generateDescription(imageData) {
             const labels = (data.responses[0].labelAnnotations || []).map(label => label.description.toLowerCase());
             const objects = (data.responses[0].localizedObjectAnnotations || []).map(obj => obj.name.toLowerCase());
             allFeatures = [...new Set([...labels, ...objects])];
-            objectList = objects; // Full list of detected objects
+            objectList = objects.length > 0 ? objects : ['no specific objects detected'];
             console.log('Detected features:', allFeatures);
-            console.log('Detected objects:', objectList);
+            console.log('Detected objects (English):', objectList);
         } else {
             console.warn('No valid response data from Vision API');
-        }
-
-        if (allFeatures.length === 0) {
-            console.log('No features detected, using fallback description');
             allFeatures = ['modern decor', 'bright lighting'];
             objectList = ['generic decor'];
         }
@@ -121,8 +137,8 @@ async function generateDescription(imageData) {
                     `Furniture:\n- ${objects.join('\n- ')}\n\n` +
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
-                    `- Room Size: Approximately 30 m2\n` +
-                    `- Amenities: High-speed Wi-Fi, central heating/cooling, nearby parking`
+                    `- Room Size: Approximately 30 m²\n` +
+                    `- Amenities: High-speed Wi-Fi, air conditioning, nearby parking`
             },
             vi: {
                 catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
@@ -140,8 +156,8 @@ async function generateDescription(imageData) {
                     `Nội thất bao gồm:\n- ${objects.join('\n- ')}\n\n` +
                     `Chi tiết bất động sản:\n` +
                     `- Giá: $400/tháng (có thể thương lượng)\n` +
-                    `- Diện tích phòng: Khoảng 30 m2\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó`
+                    `- Diện tích phòng: Khoảng 30 m²\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, bãi đỗ xe gần đó`
             }
         };
 
@@ -156,7 +172,12 @@ async function generateDescription(imageData) {
             const roomType = langData.roomTypes[roomKey === 'room' ? 'room' : roomKey];
             const featureOptions = langData.featureMap[roomKey] || langData.featureMap.default;
             const featureString = featureOptions.slice(0, 3).join(', ');
-            return langData.template(catchy, roomType, featureString, objectList);
+            // Translate objects to Vietnamese for 'vi' language, keep English for 'en'
+            const translatedObjects = lang === 'vi'
+                ? objectList.map(obj => objectTranslations[obj] || obj)
+                : objectList;
+            console.log(`Translated objects for ${lang}:`, translatedObjects);
+            return langData.template(catchy, roomType, featureString, translatedObjects);
         };
 
         const descriptions = {
