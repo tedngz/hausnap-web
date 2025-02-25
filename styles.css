@@ -3,7 +3,7 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    transition: background-color 0.3s, color 0.3s; /* Smooth theme transition */
+    transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode {
@@ -57,19 +57,32 @@ body.dark-mode p {
 }
 
 #themeToggle {
-    padding: 5px 10px;
+    padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 50%; /* Circular button */
     cursor: pointer;
     background-color: #ddd;
     color: #333;
-    font-size: 0.9rem;
+    font-size: 1.2rem; /* Larger icon */
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode #themeToggle {
     background-color: #555;
     color: #f0f0f0;
+}
+
+#themeToggle:hover {
+    background-color: #ccc;
+}
+
+body.dark-mode #themeToggle:hover {
+    background-color: #666;
 }
 
 input[type="file"] {
