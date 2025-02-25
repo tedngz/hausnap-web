@@ -3,63 +3,163 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    transition: background-color 0.3s, color 0.3s; /* Smooth theme transition */
+}
+
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
 }
 
 .container {
     max-width: 800px;
-    margin: 50px auto;
+    width: 90%;
+    margin: 20px auto;
     text-align: center;
-    padding: 20px;
+    padding: 15px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    transition: background-color 0.3s;
+}
+
+body.dark-mode .container {
+    background: #2c2c2c;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 h1 {
     color: #333;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+body.dark-mode h1 {
+    color: #f0f0f0;
+}
+
+p {
+    font-size: 1rem;
+    margin: 0 0 15px;
+    color: #555;
+}
+
+body.dark-mode p {
+    color: #d0d0d0;
+}
+
+#themeToggle {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+    color: #333;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode #themeToggle {
+    background-color: #555;
+    color: #f0f0f0;
 }
 
 input[type="file"] {
-    margin: 20px 0;
+    margin: 15px 0;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+body.dark-mode input[type="file"] {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
 }
 
 #photoPreview {
     max-width: 100%;
     height: auto;
     border-radius: 5px;
-    margin-top: 20px;
+    margin-top: 15px;
+    display: block;
 }
 
 #descriptionBox {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 15px;
+    padding: 10px;
     background: #f9f9f9;
     border-radius: 5px;
     text-align: left;
+    transition: background-color 0.3s;
+}
+
+body.dark-mode #descriptionBox {
+    background: #3a3a3a;
 }
 
 #languageSelect {
     margin-bottom: 10px;
     padding: 5px;
-    font-size: 16px;
+    font-size: 1rem;
     border-radius: 5px;
+    width: 100%;
+    max-width: 200px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+body.dark-mode #languageSelect {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
 }
 
 #descriptionText {
     width: 100%;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1rem;
     border: 1px solid #ddd;
     border-radius: 5px;
     resize: vertical;
+    box-sizing: border-box;
+    min-height: 150px;
+    background-color: #fff;
+    color: #333;
+}
+
+body.dark-mode #descriptionText {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
 }
 
 button {
     margin-top: 10px;
-    padding: 10px 20px;
+    padding: 8px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 150px;
+    transition: background-color 0.3s;
+}
+
+#saveEditButton, #shareButton {
+    display: inline-block;
+    width: auto;
+    margin: 10px 5px 0;
 }
 
 #saveEditButton {
@@ -67,8 +167,16 @@ button {
     color: white;
 }
 
+body.dark-mode #saveEditButton {
+    background-color: #388E3C;
+}
+
 #saveEditButton:hover {
     background-color: #45a049;
+}
+
+body.dark-mode #saveEditButton:hover {
+    background-color: #2E7D32;
 }
 
 #shareButton {
@@ -76,6 +184,64 @@ button {
     color: white;
 }
 
+body.dark-mode #shareButton {
+    background-color: #2a4373;
+}
+
 #shareButton:hover {
     background-color: #2a4373;
+}
+
+body.dark-mode #shareButton:hover {
+    background-color: #1e325a;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    p {
+        font-size: 0.9rem;
+    }
+    .container {
+        padding: 10px;
+        margin: 10px auto;
+    }
+    #languageSelect {
+        max-width: none;
+    }
+    #descriptionText {
+        font-size: 0.9rem;
+        min-height: 120px;
+    }
+    button {
+        width: 100%;
+        max-width: none;
+        margin: 5px 0;
+    }
+    #saveEditButton, #shareButton {
+        display: block;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #themeToggle {
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+    p {
+        font-size: 0.8rem;
+    }
+    input[type="file"] {
+        font-size: 0.9rem;
+    }
+    #descriptionText {
+        font-size: 0.8rem;
+    }
 }
