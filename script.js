@@ -1,7 +1,7 @@
 document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
 
 // Google Vision API key
-const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
+const VISION_API_KEY = 'YOUR_GOOGLE_VISION_API_KEY_HERE';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
 
 // Theme toggle setup
@@ -12,7 +12,7 @@ themeToggle.addEventListener('click', () => {
     body.classList.toggle('dark-mode');
     const isDarkMode = body.classList.contains('dark-mode');
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    themeIcon.textContent = isDarkMode ? '🌙' : '☀️'; // Moon for dark, Sun for light
+    themeIcon.textContent = isDarkMode ? '🌙' : '☀️';
 });
 
 // Load saved theme or system preference
@@ -86,11 +86,14 @@ async function generateDescription(imageData) {
         console.log('Raw API response:', data);
 
         let allFeatures = [];
+        let objectList = [];
         if (data.responses && data.responses[0]) {
             const labels = (data.responses[0].labelAnnotations || []).map(label => label.description.toLowerCase());
             const objects = (data.responses[0].localizedObjectAnnotations || []).map(obj => obj.name.toLowerCase());
             allFeatures = [...new Set([...labels, ...objects])];
+            objectList = objects; // Full list of detected objects
             console.log('Detected features:', allFeatures);
+            console.log('Detected objects:', objectList);
         } else {
             console.warn('No valid response data from Vision API');
         }
@@ -98,6 +101,7 @@ async function generateDescription(imageData) {
         if (allFeatures.length === 0) {
             console.log('No features detected, using fallback description');
             allFeatures = ['modern decor', 'bright lighting'];
+            objectList = ['generic decor'];
         }
 
         const languages = {
@@ -105,23 +109,39 @@ async function generateDescription(imageData) {
                 catchyPhrases: ["Live the dream in this stunning space!"],
                 roomTypes: { room: 'room', bedroom: 'bedroom', kitchen: 'kitchen', livingRoom: 'living room' },
                 featureMap: {
-                    bed: ['luxurious king-sized bed', 'spacious walk-in closet'],
-                    kitchen: ['state-of-the-art appliances', 'elegant countertops'],
-                    livingRoom: ['plush sectional sofa', 'large windows'],
-                    default: ['tasteful decor', 'versatile layout']
+                    bed: ['luxurious king-sized bed', 'spacious walk-in closet', 'soft recessed lighting'],
+                    kitchen: ['state-of-the-art appliances', 'elegant countertops', 'ample storage'],
+                    livingRoom: ['plush sectional sofa', 'large windows', 'modern entertainment center'],
+                    default: ['tasteful decor', 'versatile layout', 'bright ambiance']
                 },
-                template: (catchy, roomType, features) => `${catchy}\n\nWelcome to this ${roomType} with ${features}.`
+                template: (catchy, roomType, features, objects) =>
+                    `${catchy}\n\n` +
+                    `Welcome to this stunning ${roomType}, a perfect blend of style and comfort. Featuring ${features}, ` +
+                    `this space is designed for both relaxation and functionality.\n\n` +
+                    `Detected Objects:\n- ${objects.join('\n- ')}\n\n` +
+                    `Property Details:\n` +
+                    `- Price: $400/month (negotiable)\n` +
+                    `- Room Size: Approximately 400 sq ft\n` +
+                    `- Amenities: High-speed Wi-Fi, central heating/cooling, nearby parking`
             },
             vi: {
                 catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
-                    bed: ['giường king-size sang trọng', 'tủ quần áo rộng'],
-                    kitchen: ['thiết bị hiện đại', 'mặt bàn thanh lịch'],
-                    livingRoom: ['ghế sofa dài êm ái', 'cửa sổ lớn'],
-                    default: ['trang trí tinh tế', 'bố cục linh hoạt']
+                    bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
+                    kitchen: ['thiết bị hiện đại', 'mặt bàn thanh lịch', 'tủ đựng đồ rộng'],
+                    livingRoom: ['ghế sofa dài êm ái', 'cửa sổ lớn', 'trung tâm giải trí hiện đại'],
+                    default: ['trang trí tinh tế', 'bố cục linh hoạt', 'không khí sáng sủa']
                 },
-                template: (catchy, roomType, features) => `${catchy}\n\nChào mừng đến với ${roomType} với ${features}.`
+                template: (catchy, roomType, features, objects) =>
+                    `${catchy}\n\n` +
+                    `Chào mừng đến với ${roomType} tuyệt đẹp này, sự kết hợp hoàn hảo giữa phong cách và sự thoải mái. Nổi bật với ${features}, ` +
+                    `không gian này được thiết kế cho cả sự thư giãn và tiện nghi.\n\n` +
+                    `Các vật thể được phát hiện:\n- ${objects.join('\n- ')}\n\n` +
+                    `Chi tiết bất động sản:\n` +
+                    `- Giá: $1,200/tháng (có thể thương lượng)\n` +
+                    `- Diện tích phòng: Khoảng 400 sq ft\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó`
             }
         };
 
@@ -135,8 +155,8 @@ async function generateDescription(imageData) {
             const catchy = langData.catchyPhrases[0];
             const roomType = langData.roomTypes[roomKey === 'room' ? 'room' : roomKey];
             const featureOptions = langData.featureMap[roomKey] || langData.featureMap.default;
-            const featureString = featureOptions.slice(0, 2).join(', ');
-            return langData.template(catchy, roomType, featureString);
+            const featureString = featureOptions.slice(0, 3).join(', ');
+            return langData.template(catchy, roomType, featureString, objectList);
         };
 
         const descriptions = {
