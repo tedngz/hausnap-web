@@ -155,7 +155,7 @@ function setupShareButton(getDescription) {
         const photoUrl = document.getElementById('photoPreview').src;
         const shareText = getDescription();
 
-        // Fixed Facebook share URL
+        // Corrected Facebook share URL with &quote= parameter
         const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}&quote=${encodeURIComponent(shareText)}`;
         window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
     };
