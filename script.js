@@ -52,6 +52,8 @@ function handlePhotoUpload(event) {
 // Object translation mapping (English to Vietnamese)
 const objectTranslations = {
     'bed': 'giường',
+    'washing machine': 'máy giặt',
+    'desk': 'bàn',
     'sofa': 'ghế sofa',
     'television': 'tivi',
     'table': 'bàn',
