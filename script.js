@@ -70,12 +70,12 @@ const objectTranslations = {
     'curtain': 'rèm cửa'
 };
 
-// Function to get device GPS location
+// Function to get device GPS location and format as Google Maps link
 function getLocation() {
     return new Promise((resolve) => {
         if (!navigator.geolocation) {
             console.warn('Geolocation not supported by this browser');
-            resolve('Location unavailable (Geolocation not supported)');
+            resolve('Location unavailable');
             return;
         }
 
@@ -83,23 +83,12 @@ function getLocation() {
             (position) => {
                 const { latitude, longitude } = position.coords;
                 console.log('GPS coordinates:', { latitude, longitude });
-                resolve(`Latitude: ${latitude.toFixed(4)}, Longitude: ${longitude.toFixed(4)}`);
+                const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                resolve(`[View on Google Maps](${mapsLink})`);
             },
             (error) => {
                 console.warn('Geolocation error:', error.message);
-                let errorMsg = 'Location unavailable';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMsg = 'Location unavailable (Permission denied)';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMsg = 'Location unavailable (Position unavailable)';
-                        break;
-                    case error.TIMEOUT:
-                        errorMsg = 'Location unavailable (Request timed out)';
-                        break;
-                }
-                resolve(errorMsg);
+                resolve('Location unavailable');
             }
         );
     });
@@ -200,7 +189,7 @@ async function generateDescription(imageData) {
                     `- Giá: $400/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
                     `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó\n` +
-                    `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc === 'Location unavailable (Permission denied)' ? 'Vị trí không khả dụng (Quyền bị từ chối)' : loc}`
+                    `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
 
