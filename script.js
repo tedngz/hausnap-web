@@ -7,11 +7,12 @@ const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${V
 // Theme toggle setup
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
+const themeIcon = themeToggle.querySelector('.icon');
 themeToggle.addEventListener('click', () => {
     body.classList.toggle('dark-mode');
     const isDarkMode = body.classList.contains('dark-mode');
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    themeToggle.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+    themeIcon.textContent = isDarkMode ? '🌙' : '☀️'; // Moon for dark, Sun for light
 });
 
 // Load saved theme or system preference
@@ -19,9 +20,9 @@ window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         body.classList.add('dark-mode');
-        themeToggle.textContent = 'Light Mode';
+        themeIcon.textContent = '🌙';
     } else {
-        themeToggle.textContent = 'Dark Mode';
+        themeIcon.textContent = '☀️';
     }
 });
 
