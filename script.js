@@ -53,7 +53,7 @@ function handlePhotoUpload(event) {
 const objectTranslations = {
     'bed': 'giường',
     'washing machine': 'máy giặt',
-    'desk': 'bàn',
+    'desk': 'bàn làm việc',
     'sofa': 'ghế sofa',
     'television': 'tivi',
     'table': 'bàn',
@@ -69,6 +69,41 @@ const objectTranslations = {
     'rug': 'thảm',
     'curtain': 'rèm cửa'
 };
+
+// Function to get device GPS location
+function getLocation() {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            console.warn('Geolocation not supported by this browser');
+            resolve('Location unavailable (Geolocation not supported)');
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                console.log('GPS coordinates:', { latitude, longitude });
+                resolve(`Latitude: ${latitude.toFixed(4)}, Longitude: ${longitude.toFixed(4)}`);
+            },
+            (error) => {
+                console.warn('Geolocation error:', error.message);
+                let errorMsg = 'Location unavailable';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'Location unavailable (Permission denied)';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'Location unavailable (Position unavailable)';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'Location unavailable (Request timed out)';
+                        break;
+                }
+                resolve(errorMsg);
+            }
+        );
+    });
+}
 
 async function generateDescription(imageData) {
     const descriptionText = document.getElementById('descriptionText');
@@ -92,6 +127,10 @@ async function generateDescription(imageData) {
     };
 
     try {
+        // Get location first
+        const location = await getLocation();
+        console.log('Location retrieved:', location);
+
         console.log('Sending request to Vision API...');
         const response = await fetch(VISION_API_URL, {
             method: 'POST',
@@ -132,7 +171,7 @@ async function generateDescription(imageData) {
                     livingRoom: ['plush sectional sofa', 'large windows', 'modern entertainment center'],
                     default: ['tasteful decor', 'versatile layout', 'bright ambiance']
                 },
-                template: (catchy, roomType, features, objects) =>
+                template: (catchy, roomType, features, objects, loc) =>
                     `${catchy}\n\n` +
                     `Welcome to this stunning ${roomType}, a perfect blend of style and comfort. Featuring ${features}, ` +
                     `this space is designed for both relaxation and functionality.\n\n` +
@@ -140,7 +179,8 @@ async function generateDescription(imageData) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, air conditioning, nearby parking`
+                    `- Amenities: High-speed Wi-Fi, central heating/cooling, nearby parking\n` +
+                    `- Location: ${loc}`
             },
             vi: {
                 catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
@@ -151,7 +191,7 @@ async function generateDescription(imageData) {
                     livingRoom: ['ghế sofa dài êm ái', 'cửa sổ lớn', 'trung tâm giải trí hiện đại'],
                     default: ['trang trí tinh tế', 'bố cục linh hoạt', 'không khí sáng sủa']
                 },
-                template: (catchy, roomType, features, objects) =>
+                template: (catchy, roomType, features, objects, loc) =>
                     `${catchy}\n\n` +
                     `Chào mừng đến với ${roomType} tuyệt đẹp này, sự kết hợp hoàn hảo giữa phong cách và sự thoải mái. Nổi bật với ${features}, ` +
                     `không gian này được thiết kế cho cả sự thư giãn và tiện nghi.\n\n` +
@@ -159,7 +199,8 @@ async function generateDescription(imageData) {
                     `Chi tiết bất động sản:\n` +
                     `- Giá: $400/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, bãi đỗ xe gần đó`
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó\n` +
+                    `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc === 'Location unavailable (Permission denied)' ? 'Vị trí không khả dụng (Quyền bị từ chối)' : loc}`
             }
         };
 
@@ -174,12 +215,11 @@ async function generateDescription(imageData) {
             const roomType = langData.roomTypes[roomKey === 'room' ? 'room' : roomKey];
             const featureOptions = langData.featureMap[roomKey] || langData.featureMap.default;
             const featureString = featureOptions.slice(0, 3).join(', ');
-            // Translate objects to Vietnamese for 'vi' language, keep English for 'en'
             const translatedObjects = lang === 'vi'
                 ? objectList.map(obj => objectTranslations[obj] || obj)
                 : objectList;
             console.log(`Translated objects for ${lang}:`, translatedObjects);
-            return langData.template(catchy, roomType, featureString, translatedObjects);
+            return langData.template(catchy, roomType, featureString, translatedObjects, location);
         };
 
         const descriptions = {
