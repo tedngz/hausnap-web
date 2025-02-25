@@ -1,7 +1,7 @@
 document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
 
 // Google Vision and Translate API keys
-const VISION_API_KEY = 'YOUR_GOOGLE_VISION_API_KEY_HERE';
+const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
 const TRANSLATE_API_KEY = 'YOUR_GOOGLE_TRANSLATE_API_KEY_HERE';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
 const TRANSLATE_API_URL = `https://translation.googleapis.com/language/translate/v2?key=${TRANSLATE_API_KEY}`;
