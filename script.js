@@ -1,7 +1,7 @@
 document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
 
 // Google Vision API key
-const VISION_API_KEY = 'YOUR_GOOGLE_VISION_API_KEY_HERE';
+const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
 
 // Theme toggle setup
@@ -118,10 +118,10 @@ async function generateDescription(imageData) {
                     `${catchy}\n\n` +
                     `Welcome to this stunning ${roomType}, a perfect blend of style and comfort. Featuring ${features}, ` +
                     `this space is designed for both relaxation and functionality.\n\n` +
-                    `Detected Objects:\n- ${objects.join('\n- ')}\n\n` +
+                    `Furniture:\n- ${objects.join('\n- ')}\n\n` +
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
-                    `- Room Size: Approximately 400 sq ft\n` +
+                    `- Room Size: Approximately 30 m2\n` +
                     `- Amenities: High-speed Wi-Fi, central heating/cooling, nearby parking`
             },
             vi: {
@@ -137,10 +137,10 @@ async function generateDescription(imageData) {
                     `${catchy}\n\n` +
                     `Chào mừng đến với ${roomType} tuyệt đẹp này, sự kết hợp hoàn hảo giữa phong cách và sự thoải mái. Nổi bật với ${features}, ` +
                     `không gian này được thiết kế cho cả sự thư giãn và tiện nghi.\n\n` +
-                    `Các vật thể được phát hiện:\n- ${objects.join('\n- ')}\n\n` +
+                    `Nội thất bao gồm:\n- ${objects.join('\n- ')}\n\n` +
                     `Chi tiết bất động sản:\n` +
-                    `- Giá: $1,200/tháng (có thể thương lượng)\n` +
-                    `- Diện tích phòng: Khoảng 400 sq ft\n` +
+                    `- Giá: $400/tháng (có thể thương lượng)\n` +
+                    `- Diện tích phòng: Khoảng 30 m2\n` +
                     `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó`
             }
         };
