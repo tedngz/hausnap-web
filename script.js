@@ -10,15 +10,27 @@ function handlePhotoUpload(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const preview = document.getElementById('photoPreview');
+            if (!preview) {
+                console.error('Photo preview element not found');
+                return;
+            }
             preview.src = e.target.result;
             preview.style.display = 'block';
             generateDescription(file, e.target.result);
         };
         reader.readAsDataURL(file);
+    } else {
+        console.log('No file selected');
     }
 }
 
 async function generateDescription(file, imageData) {
+    const descriptionText = document.getElementById('descriptionText');
+    if (!descriptionText) {
+        console.error('Description text element not found');
+        return;
+    }
+
     const base64Image = imageData.split(',')[1];
     const requestBody = {
         requests: [
@@ -33,17 +45,25 @@ async function generateDescription(file, imageData) {
     };
 
     try {
+        console.log('Sending request to Vision API...');
         const response = await fetch(VISION_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody)
         });
 
+        if (!response.ok) {
+            throw new Error(`Vision API request failed with status: ${response.status}`);
+        }
+
         const data = await response.json();
+        console.log('Vision API response:', data);
+
         if (data.responses && data.responses[0]) {
             const labels = (data.responses[0].labelAnnotations || []).map(label => label.description.toLowerCase());
             const objects = (data.responses[0].localizedObjectAnnotations || []).map(obj => obj.name.toLowerCase());
             const allFeatures = [...new Set([...labels, ...objects])];
+            console.log('Detected features:', allFeatures);
 
             // Language-specific content (hardcoded)
             const languages = {
@@ -119,10 +139,19 @@ async function generateDescription(file, imageData) {
             };
 
             // Display and handle language toggle
-            const descriptionText = document.getElementById('descriptionText');
-            const languageSelect = document.getElementById('languageSelect');
             descriptionText.value = descriptions.en;
-            document.getElementById('descriptionBox').style.display = 'block';
+            const descriptionBox = document.getElementById('descriptionBox');
+            if (descriptionBox) {
+                descriptionBox.style.display = 'block';
+            } else {
+                console.error('Description box element not found');
+            }
+
+            const languageSelect = document.getElementById('languageSelect');
+            if (!languageSelect) {
+                console.error('Language select element not found');
+                return;
+            }
 
             let currentDescription = descriptions.en;
             languageSelect.onchange = function() {
@@ -132,30 +161,42 @@ async function generateDescription(file, imageData) {
             };
 
             // Save edits and setup sharing
-            document.getElementById('saveEditButton').onclick = function() {
-                currentDescription = descriptionText.value;
-                descriptions[languageSelect.value] = currentDescription;
-                alert('Edits saved!');
-            };
+            const saveEditButton = document.getElementById('saveEditButton');
+            if (saveEditButton) {
+                saveEditButton.onclick = function() {
+                    currentDescription = descriptionText.value;
+                    descriptions[languageSelect.value] = currentDescription;
+                    alert('Edits saved!');
+                };
+            } else {
+                console.error('Save edit button not found');
+            }
+
             setupShareButton(() => currentDescription);
         } else {
-            throw new Error('No analysis returned from API');
+            throw new Error('No valid response data from Vision API');
         }
     } catch (error) {
-        console.error('Error with Vision API:', error);
-        const descriptionText = document.getElementById('descriptionText');
+        console.error('Error in generateDescription:', error);
         descriptionText.value = 'Oops! Couldn’t analyze the photo. Try again.';
-        document.getElementById('descriptionBox').style.display = 'block';
+        const descriptionBox = document.getElementById('descriptionBox');
+        if (descriptionBox) {
+            descriptionBox.style.display = 'block';
+        }
     }
 }
 
 function setupShareButton(getDescription) {
     const shareButton = document.getElementById('shareButton');
+    if (!shareButton) {
+        console.error('Share button not found');
+        return;
+    }
     shareButton.onclick = function() {
         const photoUrl = document.getElementById('photoPreview').src;
         const shareText = getDescription();
 
-        // Corrected Facebook share URL with &quote= parameter
+        // Corrected Facebook share URL
         const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}&quote=${encodeURIComponent(shareText)}`;
         window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
     };
