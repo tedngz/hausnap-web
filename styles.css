@@ -299,3 +299,67 @@ body.dark-mode #descriptionText {
     color: #f0f0f0;
     border-color: #555;
 }
+
+/* ... (previous styles remain unchanged) */
+
+#authContainer {
+    margin: 10px 0;
+    text-align: center;
+}
+
+#googleSignIn, #signOut {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 5px;
+}
+
+#googleSignIn {
+    background-color: #4285f4;
+    color: white;
+}
+
+body.dark-mode #googleSignIn {
+    background-color: #357abd;
+}
+
+#googleSignIn:hover {
+    background-color: #357abd;
+}
+
+body.dark-mode #googleSignIn:hover {
+    background-color: #2a5f9e;
+}
+
+#signOut {
+    background-color: #f44336;
+    color: white;
+}
+
+body.dark-mode #signOut {
+    background-color: #d32f2f;
+}
+
+#signOut:hover {
+    background-color: #d32f2f;
+}
+
+body.dark-mode #signOut:hover {
+    background-color: #b71c1c;
+}
+
+#userInfo {
+    margin: 5px 0;
+    color: #555;
+}
+
+body.dark-mode #userInfo {
+    color: #d0d0d0;
+}
+
+#photoInput:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
