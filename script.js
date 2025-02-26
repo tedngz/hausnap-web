@@ -283,7 +283,7 @@ async function generateDescription(imageDataArray) {
 
         const languages = {
             en: {
-                catchyPhrases: ["Live the dream in this stunning space!"],
+                catchyPhrases: ["Live the dream in this stunning ${roomType}!"],
                 roomTypes: { room: 'room', bedroom: 'bedroom', kitchen: 'kitchen', livingRoom: 'living room' },
                 featureMap: {
                     bed: ['luxurious king-sized bed', 'spacious walk-in closet', 'soft recessed lighting'],
@@ -300,11 +300,11 @@ async function generateDescription(imageDataArray) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, air conditioning, cleaning, nearby parking\n` +
+                    `- Amenities: High-speed Wi-Fi, air conditioning, cleaning service, nearby parking\n` +
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
+                catchyPhrases: ["Sống trong giấc mơ với ${roomType} này!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -319,9 +319,9 @@ async function generateDescription(imageDataArray) {
                     `Nhiều góc nhìn cho thấy một khu vực được trang bị tốt với ${objects.length} yếu tố độc đáo.\n\n` +
                     `Nội thất bao gồm:\n- ${objects.join('\n- ')}\n\n` +
                     `Chi tiết bất động sản:\n` +
-                    `- Giá: 10 triệu/tháng (có thể thương lượng)\n` +
+                    `- Giá: $400/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, dọn vệ sinh chung, bãi đỗ xe gần đó\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, vệ sinh chung, bãi đỗ xe gần đó\n` +
                     `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
@@ -394,11 +394,16 @@ function setupShareButton(getDescription) {
     }
     shareButton.onclick = function() {
         const shareText = getDescription();
-        // Use a placeholder URL since local images aren't shareable; ideally, upload to a server
-        const placeholderUrl = 'https://example.com/roomsnap'; // Replace with a real URL if hosted
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(placeholderUrl)}&quote=${encodeURIComponent(shareText)}`;
-        window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
+        // Using 'quote' parameter for pre-filled description; 'u' needs a public URL
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}`;
         console.log('Share button clicked, URL:', fbShareUrl);
+        try {
+            window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
+            console.log('Share window opened successfully');
+        } catch (error) {
+            console.error('Failed to open share window:', error);
+            displayError('Failed to share to Facebook. Check console for details.');
+        }
     };
 }
 
