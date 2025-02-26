@@ -1,267 +1,204 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
     transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 900px;
     width: 90%;
     margin: 20px auto;
-    text-align: center;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 }
 
 body.dark-mode .container {
-    background: #2c2c2c;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    background: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+body.dark-mode .header {
+    border-bottom-color: #444;
 }
 
 h1 {
     color: #333;
     font-size: 1.8rem;
     margin: 0;
+    font-weight: 600;
 }
 
 body.dark-mode h1 {
-    color: #f0f0f0;
+    color: #e0e0e0;
 }
 
-p {
-    font-size: 1rem;
-    margin: 0 0 15px;
-    color: #555;
-}
-
-body.dark-mode p {
-    color: #d0d0d0;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 #themeToggle {
-    padding: 5px;
+    padding: 0;
     border: none;
-    border-radius: 50%; /* Circular button */
+    border-radius: 50%;
     cursor: pointer;
-    background-color: #ddd;
-    color: #333;
-    font-size: 1.2rem; /* Larger icon */
-    width: 30px;
-    height: 30px;
+    background: none;
+    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-body.dark-mode #themeToggle {
-    background-color: #555;
-    color: #f0f0f0;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 #themeToggle:hover {
-    background-color: #ccc;
+    background-color: #eee;
+    transform: scale(1.1);
+}
+
+body.dark-mode #themeToggle {
+    color: #e0e0e0;
 }
 
 body.dark-mode #themeToggle:hover {
-    background-color: #666;
+    background-color: #444;
+}
+
+#authContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #4285f4;
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.auth-btn:hover {
+    background-color: #357abd;
+    transform: scale(1.05);
+}
+
+body.dark-mode .auth-btn {
+    background-color: #357abd;
+}
+
+body.dark-mode .auth-btn:hover {
+    background-color: #2a5f9e;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .user-icon {
+    border-color: #444;
+}
+
+.signout-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #f44336;
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.signout-btn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+body.dark-mode .signout-btn {
+    background-color: #d32f2f;
+}
+
+body.dark-mode .signout-btn:hover {
+    background-color: #b71c1c;
+}
+
+.app-content {
+    padding-top: 20px;
+}
+
+.prompt {
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 15px;
+}
+
+body.dark-mode .prompt {
+    color: #b0b0b0;
 }
 
 input[type="file"] {
     margin: 15px 0;
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     box-sizing: border-box;
     background-color: #fff;
     border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input[type="file"]:hover:not(:disabled) {
+    border-color: #aaa;
 }
 
 body.dark-mode input[type="file"] {
     background-color: #333;
-    color: #f0f0f0;
+    color: #e0e0e0;
     border-color: #555;
 }
 
-#photoPreview {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-    margin-top: 15px;
-    display: block;
+#photoInput:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-#descriptionBox {
-    margin-top: 15px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    text-align: left;
-    transition: background-color 0.3s;
-}
-
-body.dark-mode #descriptionBox {
-    background: #3a3a3a;
-}
-
-#languageSelect {
-    margin-bottom: 10px;
-    padding: 5px;
-    font-size: 1rem;
-    border-radius: 5px;
-    width: 100%;
-    max-width: 200px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
-
-body.dark-mode #languageSelect {
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #555;
-}
-
-#descriptionText {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    box-sizing: border-box;
-    min-height: 150px;
-    background-color: #fff;
-    color: #333;
-}
-
-body.dark-mode #descriptionText {
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #555;
-}
-
-button {
-    margin-top: 10px;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    width: 100%;
-    max-width: 150px;
-    transition: background-color 0.3s;
-}
-
-#saveEditButton, #shareButton {
-    display: inline-block;
-    width: auto;
-    margin: 10px 5px 0;
-}
-
-#saveEditButton {
-    background-color: #4CAF50;
-    color: white;
-}
-
-body.dark-mode #saveEditButton {
-    background-color: #388E3C;
-}
-
-#saveEditButton:hover {
-    background-color: #45a049;
-}
-
-body.dark-mode #saveEditButton:hover {
-    background-color: #2E7D32;
-}
-
-#shareButton {
-    background-color: #3b5998;
-    color: white;
-}
-
-body.dark-mode #shareButton {
-    background-color: #2a4373;
-}
-
-#shareButton:hover {
-    background-color: #2a4373;
-}
-
-body.dark-mode #shareButton:hover {
-    background-color: #1e325a;
-}
-
-@media (max-width: 600px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-    p {
-        font-size: 0.9rem;
-    }
-    .container {
-        padding: 10px;
-        margin: 10px auto;
-    }
-    #languageSelect {
-        max-width: none;
-    }
-    #descriptionText {
-        font-size: 0.9rem;
-        min-height: 120px;
-    }
-    button {
-        width: 100%;
-        max-width: none;
-        margin: 5px 0;
-    }
-    #saveEditButton, #shareButton {
-        display: block;
-    }
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    #themeToggle {
-        margin-top: 5px;
-    }
-}
-
-@media (max-width: 400px) {
-    h1 {
-        font-size: 1.2rem;
-    }
-    p {
-        font-size: 0.8rem;
-    }
-    input[type="file"] {
-        font-size: 0.9rem;
-    }
-    #descriptionText {
-        font-size: 0.8rem;
-    }
-}
-
-/* ... (previous styles remain unchanged) */
-
-#previewContainer {
+.preview-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -269,97 +206,181 @@ body.dark-mode #shareButton:hover {
     margin-top: 15px;
 }
 
-#previewContainer img {
-    max-width: 150px; /* Smaller previews for multiple images */
+.preview-container img {
+    max-width: 150px;
     height: auto;
-    border-radius: 5px;
-    display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
-@media (max-width: 600px) {
-    #previewContainer img {
-        max-width: 100px;
-    }
+.preview-container img:hover {
+    transform: scale(1.05);
 }
 
-/* Increase textarea size slightly for longer descriptions */
-#descriptionText {
+.description-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s;
+}
+
+body.dark-mode .description-box {
+    background: #3a3a3a;
+}
+
+.description-box h3 {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+body.dark-mode .description-box h3 {
+    color: #e0e0e0;
+}
+
+.sleek-select {
+    margin-bottom: 10px;
+    padding: 6px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    transition: border-color 0.3s;
+}
+
+body.dark-mode .sleek-select {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+.sleek-select:hover {
+    border-color: #aaa;
+}
+
+.sleek-textarea {
     width: 100%;
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     resize: vertical;
     box-sizing: border-box;
-    min-height: 200px; /* Adjusted for more content */
+    min-height: 200px;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s;
 }
 
-body.dark-mode #descriptionText {
+.sleek-textarea:hover {
+    border-color: #aaa;
+}
+
+body.dark-mode .sleek-textarea {
     background-color: #333;
-    color: #f0f0f0;
+    color: #e0e0e0;
     border-color: #555;
 }
 
-/* ... (previous styles remain unchanged) */
-
-#authContainer {
-    margin: 10px 0;
-    text-align: center;
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 
-#googleSignIn, #signOut {
-    padding: 8px 15px;
+.sleek-btn {
+    padding: 8px 16px;
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 1rem;
-    margin: 5px;
-}
-
-#googleSignIn {
-    background-color: #4285f4;
+    font-size: 0.9rem;
+    background-color: #4CAF50;
     color: white;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-body.dark-mode #googleSignIn {
-    background-color: #357abd;
+body.dark-mode .sleek-btn {
+    background-color: #388E3C;
 }
 
-#googleSignIn:hover {
-    background-color: #357abd;
+.sleek-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
 }
 
-body.dark-mode #googleSignIn:hover {
-    background-color: #2a5f9e;
+body.dark-mode .sleek-btn:hover {
+    background-color: #2E7D32;
 }
 
-#signOut {
-    background-color: #f44336;
-    color: white;
+.share-btn {
+    background-color: #3b5998;
 }
 
-body.dark-mode #signOut {
-    background-color: #d32f2f;
+body.dark-mode .share-btn {
+    background-color: #2a4373;
 }
 
-#signOut:hover {
-    background-color: #d32f2f;
+.share-btn:hover {
+    background-color: #2a4373;
 }
 
-body.dark-mode #signOut:hover {
-    background-color: #b71c1c;
+body.dark-mode .share-btn:hover {
+    background-color: #1e325a;
 }
 
-#userInfo {
-    margin: 5px 0;
-    color: #555;
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    .prompt {
+        font-size: 0.9rem;
+    }
+    .container {
+        padding: 15px;
+        margin: 10px auto;
+    }
+    .preview-container img {
+        max-width: 100px;
+    }
+    .sleek-select {
+        max-width: none;
+    }
+    .sleek-textarea {
+        font-size: 0.9rem;
+        min-height: 150px;
+    }
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sleek-btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-right {
+        margin-top: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 }
 
-body.dark-mode #userInfo {
-    color: #d0d0d0;
-}
-
-#photoInput:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+    .prompt {
+        font-size: 0.8rem;
+    }
+    .sleek-textarea {
+        font-size: 0.8rem;
+    }
 }
