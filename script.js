@@ -397,15 +397,15 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        const shareText = getDescription();
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}`;
-        console.log('Opening Facebook share dialog, URL:', fbShareUrl);
+        // Open an empty Facebook share dialog; user must paste the description manually
+        const fbShareUrl = 'https://www.facebook.com/sharer/sharer.php';
+        console.log('Opening empty Facebook share dialog, URL:', fbShareUrl);
         try {
             window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
             console.log('Facebook share dialog opened successfully');
         } catch (error) {
             console.error('Failed to open share dialog:', error);
-            displayError('Failed to share to Facebook. Check console for details.');
+            displayError('Failed to open Facebook share dialog. Check console for details.');
         }
     };
 }
