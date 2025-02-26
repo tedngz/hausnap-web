@@ -258,3 +258,44 @@ body.dark-mode #shareButton:hover {
         font-size: 0.8rem;
     }
 }
+
+/* ... (previous styles remain unchanged) */
+
+#previewContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#previewContainer img {
+    max-width: 150px; /* Smaller previews for multiple images */
+    height: auto;
+    border-radius: 5px;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    #previewContainer img {
+        max-width: 100px;
+    }
+}
+
+/* Increase textarea size slightly for longer descriptions */
+#descriptionText {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    box-sizing: border-box;
+    min-height: 200px; /* Adjusted for more content */
+}
+
+body.dark-mode #descriptionText {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
+}
