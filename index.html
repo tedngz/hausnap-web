@@ -3,41 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hausto - Web</title>
+    <title>Hausto</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header class="header">
             <h1>Hausto</h1>
-            <button id="themeToggle" aria-label="Toggle theme">
-                <span class="icon">☀️</span>
-            </button>
-        </div>
-        <div id="authContainer">
-            <button id="googleSignIn" style="display: none;">Sign In with Google</button>
-            <button id="signOut" style="display: none;">Sign Out</button>
-            <p id="userInfo"></p>
-        </div>
-        <p id="uploadPrompt">Upload photos of your apartment to get an instant description!</p>
+            <div class="header-right">
+                <button id="themeToggle" aria-label="Toggle theme">
+                    <span class="icon">☀️</span>
+                </button>
+                <div id="authContainer">
+                    <button id="googleSignIn" class="auth-btn">Sign In</button>
+                    <div id="userProfile" class="user-profile" style="display: none;">
+                        <img id="userIcon" src="" alt="User" class="user-icon">
+                        <button id="signOut" class="signout-btn">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </header>
         
-        <input type="file" id="photoInput" accept="image/*" multiple disabled>
-        <div id="previewContainer">
-            <!-- Previews will be dynamically added here -->
-        </div>
-        
-        <div id="descriptionBox" style="display: none;">
-            <h3>Room Description</h3>
-            <select id="languageSelect">
-                <option value="en">English</option>
-                <option value="vi">Vietnamese</option>
-            </select>
-            <textarea id="descriptionText" rows="10" cols="50"></textarea>
-            <button id="saveEditButton">Save Edits</button>
-            <button id="shareButton">Share to Facebook</button>
-        </div>
+        <main id="appContainer" class="app-content" style="display: none;">
+            <p class="prompt">Upload photos of your apartment to get an instant description!</p>
+            <input type="file" id="photoInput" accept="image/*" multiple disabled>
+            <div id="previewContainer" class="preview-container"></div>
+            <div id="descriptionBox" class="description-box" style="display: none;">
+                <h3>Room Description</h3>
+                <select id="languageSelect" class="sleek-select">
+                    <option value="en">English</option>
+                    <option value="vi">Vietnamese</option>
+                </select>
+                <textarea id="descriptionText" class="sleek-textarea" rows="10" cols="50"></textarea>
+                <div class="button-group">
+                    <button id="saveEditButton" class="sleek-btn">Save Edits</button>
+                    <button id="shareButton" class="sleek-btn share-btn">Share to Facebook</button>
+                </div>
+            </div>
+        </main>
     </div>
-    <!-- Google Sign-In API script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="script.js"></script>
 </body>
