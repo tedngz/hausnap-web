@@ -190,7 +190,7 @@ function getLocation() {
             (position) => {
                 const { latitude, longitude } = position.coords;
                 console.log('GPS coordinates retrieved:', { latitude, longitude });
-                const mapsLink = `https://www.facebook.com/sharer/sharer.php?q=${latitude},${longitude}`;
+                const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
                 resolve(mapsLink);
             },
             (error) => {
@@ -304,7 +304,7 @@ async function generateDescription(imageDataArray) {
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Trải nghiệm không gian sống lý tưởng!"],
+                catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -397,17 +397,15 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        // Use dialog/feed for a mobile-friendly empty share dialog
-        const fbShareUrl = 'https://www.facebook.com/dialog/feed?app_id=145634995501895&display=popup';
-        console.log('Opening mobile-friendly Facebook share dialog, URL:', fbShareUrl);
+        // Open mobile Facebook homepage for manual posting
+        const fbShareUrl = 'https://m.facebook.com/';
+        console.log('Opening mobile Facebook homepage, URL:', fbShareUrl);
         try {
-            window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
-            console.log('Facebook share dialog opened successfully');
-            // Optional: Prompt user to paste content
-            // alert('Paste your copied description into the Facebook post!');
+            window.open(fbShareUrl, '_blank');
+            console.log('Facebook mobile page opened successfully');
         } catch (error) {
-            console.error('Failed to open share dialog:', error);
-            displayError('Failed to open Facebook share dialog. Check console for details.');
+            console.error('Failed to open Facebook page:', error);
+            displayError('Failed to open Facebook. Check console for details.');
         }
     };
 }
