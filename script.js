@@ -2,8 +2,8 @@
 const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
 
-// Google Sign-In Client ID (replace with your own from Google Cloud Console)
-const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com'; // Get this from Google Cloud Console
+// Replace with your actual Google Client ID from Google Cloud Console
+const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com'; // Update this!
 
 // Theme toggle setup
 const themeToggle = document.getElementById('themeToggle');
@@ -16,8 +16,8 @@ themeToggle.addEventListener('click', () => {
     themeIcon.textContent = isDarkMode ? '🌙' : '☀️';
 });
 
-// Load saved theme or system preference and initialize Google Sign-In
 let userToken = null;
+
 window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -27,7 +27,7 @@ window.addEventListener('load', () => {
         themeIcon.textContent = '☀️';
     }
 
-    // Request location permission on page load
+    // Request location permission on load
     if (navigator.geolocation) {
         console.log('Requesting location permission on page load...');
         navigator.geolocation.getCurrentPosition(
@@ -35,8 +35,6 @@ window.addEventListener('load', () => {
             (error) => console.warn('Initial location permission denied or failed:', error.message),
             { timeout: 10000 }
         );
-    } else {
-        console.warn('Geolocation not supported by this browser');
     }
 
     // Initialize Google Sign-In
@@ -46,10 +44,9 @@ window.addEventListener('load', () => {
     });
     google.accounts.id.renderButton(
         document.getElementById('googleSignIn'),
-        { theme: 'outline', size: 'large' } // Customize button appearance
+        { theme: 'outline', size: 'large' }
     );
 
-    // Check if already signed in
     const savedToken = localStorage.getItem('googleToken');
     if (savedToken) {
         userToken = savedToken;
@@ -59,7 +56,6 @@ window.addEventListener('load', () => {
     }
 });
 
-// Handle Google Sign-In response
 function handleCredentialResponse(response) {
     if (response.credential) {
         userToken = response.credential;
@@ -72,7 +68,6 @@ function handleCredentialResponse(response) {
     }
 }
 
-// Parse JWT token to get user info
 function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -82,7 +77,6 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
-// Update UI based on auth state
 function updateAuthUI(isSignedIn) {
     const googleSignIn = document.getElementById('googleSignIn');
     const signOut = document.getElementById('signOut');
@@ -106,7 +100,6 @@ function updateAuthUI(isSignedIn) {
     }
 }
 
-// Sign out function
 document.getElementById('signOut').addEventListener('click', () => {
     userToken = null;
     localStorage.removeItem('googleToken');
@@ -115,7 +108,6 @@ document.getElementById('signOut').addEventListener('click', () => {
     updateAuthUI(false);
 });
 
-// Photo upload handler (restricted to signed-in users)
 function handlePhotoUpload(event) {
     if (!userToken) {
         console.log('User not signed in, upload blocked');
@@ -136,7 +128,7 @@ function handlePhotoUpload(event) {
         console.error('Preview container not found');
         return;
     }
-    previewContainer.innerHTML = ''; // Clear previous previews
+    previewContainer.innerHTML = '';
 
     const imageDataPromises = Array.from(files).map(file => {
         return new Promise((resolve) => {
@@ -166,7 +158,6 @@ function handlePhotoUpload(event) {
     });
 }
 
-// Object translation mapping (English to Vietnamese)
 const objectTranslations = {
     'bed': 'giường',
     'washing machine': 'máy giặt',
@@ -187,7 +178,6 @@ const objectTranslations = {
     'curtain': 'rèm cửa'
 };
 
-// Function to get device GPS location as a raw Google Maps URL
 function getLocation() {
     return new Promise((resolve) => {
         if (!navigator.geolocation) {
@@ -212,7 +202,6 @@ function getLocation() {
     });
 }
 
-// Helper function to display errors in the UI
 function displayError(message) {
     const descriptionText = document.getElementById('descriptionText');
     const descriptionBox = document.getElementById('descriptionBox');
@@ -411,3 +400,5 @@ function setupShareButton(getDescription) {
         console.log('Share button clicked, URL:', fbShareUrl);
     };
 }
+
+document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
