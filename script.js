@@ -304,7 +304,7 @@ async function generateDescription(imageDataArray) {
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
+                catchyPhrases: ["Trải nghiệm không gian sống lý tưởng!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -397,15 +397,24 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        // Open mobile Facebook homepage for manual posting
-        const fbShareUrl = 'https://m.facebook.com/';
-        console.log('Opening mobile Facebook homepage, URL:', fbShareUrl);
+        // Try FB app intent first, fall back to mobile composer
+        const fbAppUrl = 'fb://post'; // Intent for FB app to open a new post
+        const fbMobileUrl = 'https://m.facebook.com/composer'; // Mobile web composer
+        console.log('Attempting to open Facebook post via app or mobile site');
         try {
-            window.open(fbShareUrl, '_blank');
-            console.log('Facebook mobile page opened successfully');
+            // Attempt to open via app
+            window.location.href = fbAppUrl;
+            // Fallback to mobile site after a short delay if app not installed
+            setTimeout(() => {
+                console.log('Falling back to mobile Facebook composer, URL:', fbMobileUrl);
+                window.open(fbMobileUrl, '_blank');
+            }, 1000);
+            console.log('Facebook post dialog triggered');
         } catch (error) {
-            console.error('Failed to open Facebook page:', error);
-            displayError('Failed to open Facebook. Check console for details.');
+            console.error('Failed to open Facebook post dialog:', error);
+            displayError('Failed to open Facebook post dialog. Check console for details.');
+            // Fallback immediately if error occurs
+            window.open(fbMobileUrl, '_blank');
         }
     };
 }
