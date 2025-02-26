@@ -63,6 +63,7 @@ function handleCredentialResponse(response) {
         updateAuthUI(true);
     } else {
         console.error('Sign-in failed:', response);
+        displayError('Sign-in failed. Check console for details.');
     }
 }
 
@@ -98,6 +99,8 @@ function updateAuthUI(isSignedIn) {
         photoInput.disabled = true;
         uploadPrompt.textContent = 'Please sign in to upload photos and generate descriptions.';
     }
+    // Ensure app container is always visible
+    document.getElementById('appContainer').style.display = 'block';
 }
 
 document.getElementById('signOut').addEventListener('click', () => {
@@ -300,7 +303,7 @@ async function generateDescription(imageDataArray) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, cooling, nearby parking\n` +
+                    `- Amenities: High-speed Wi-Fi, air conditioning, nearby parking\n` +
                     `- Location: ${loc}`
             },
             vi: {
