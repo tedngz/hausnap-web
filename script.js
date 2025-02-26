@@ -300,11 +300,11 @@ async function generateDescription(imageDataArray) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, air conditioning, cleaning service, nearby parking\n` +
+                    `- Amenities: High-speed Wi-Fi, air conditioner, cleaning service nearby parking\n` +
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Trải nghiệm không gian sống lý tưởng!"],
+                catchyPhrases: ["Khám phá không gian sống lý tưởng!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -398,7 +398,7 @@ function setupShareButton(getDescription) {
     }
     shareButton.onclick = function() {
         // Open mobile Facebook composer directly
-        const fbShareUrl = 'https://m.facebook.com/sharer.php';
+        const fbShareUrl = 'https://m.facebook.com/composer';
         console.log('Opening mobile Facebook composer, URL:', fbShareUrl);
         try {
             window.open(fbShareUrl, '_blank');
