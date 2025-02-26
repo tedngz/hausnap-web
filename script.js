@@ -5,7 +5,6 @@ const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${V
 // Replace with your actual Google Client ID from Google Cloud Console
 const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com'; // Update this!
 
-// Theme toggle setup
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
 const themeIcon = themeToggle.querySelector('.icon');
@@ -99,8 +98,6 @@ function updateAuthUI(isSignedIn) {
         photoInput.disabled = true;
         uploadPrompt.textContent = 'Please sign in to upload photos and generate descriptions.';
     }
-    // Ensure app container is always visible
-    document.getElementById('appContainer').style.display = 'block';
 }
 
 document.getElementById('signOut').addEventListener('click', () => {
@@ -303,7 +300,7 @@ async function generateDescription(imageDataArray) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, air conditioning, nearby parking\n` +
+                    `- Amenities: High-speed Wi-Fi, air conditioning, cleaning, nearby parking\n` +
                     `- Location: ${loc}`
             },
             vi: {
@@ -324,7 +321,7 @@ async function generateDescription(imageDataArray) {
                     `Chi tiết bất động sản:\n` +
                     `- Giá: 10 triệu/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, bãi đỗ xe gần đó\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, dọn vệ sinh chung, bãi đỗ xe gần đó\n` +
                     `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
@@ -396,9 +393,10 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        const photoUrl = document.getElementById('photoPreview').src;
         const shareText = getDescription();
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}"e=${encodeURIComponent(shareText)}`;
+        // Use a placeholder URL since local images aren't shareable; ideally, upload to a server
+        const placeholderUrl = 'https://example.com/roomsnap'; // Replace with a real URL if hosted
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(placeholderUrl)}&quote=${encodeURIComponent(shareText)}`;
         window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
         console.log('Share button clicked, URL:', fbShareUrl);
     };
