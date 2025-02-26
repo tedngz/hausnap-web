@@ -28,25 +28,39 @@ window.addEventListener('load', () => {
 
 function handlePhotoUpload(event) {
     console.log('Photo upload triggered');
-    const file = event.target.files[0];
-    if (!file) {
-        console.log('No file selected');
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+        console.log('No files selected');
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        console.log('File read successfully');
-        const preview = document.getElementById('photoPreview');
-        if (!preview) {
-            console.error('Photo preview element not found');
-            return;
-        }
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        generateDescription(e.target.result);
-    };
-    reader.readAsDataURL(file);
+    const previewContainer = document.getElementById('previewContainer');
+    if (!previewContainer) {
+        console.error('Preview container not found');
+        return;
+    }
+    previewContainer.innerHTML = ''; // Clear previous previews
+
+    const imageDataPromises = Array.from(files).map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Preview';
+                previewContainer.appendChild(img);
+                resolve(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    Promise.all(imageDataPromises).then(imageDataArray => {
+        console.log('All files read successfully');
+        generateDescription(imageDataArray);
+    }).catch(error => {
+        console.error('Error reading files:', error);
+    });
 }
 
 // Object translation mapping (English to Vietnamese)
@@ -70,7 +84,7 @@ const objectTranslations = {
     'curtain': 'rèm cửa'
 };
 
-// Function to get device GPS location and format as a raw Google Maps URL
+// Function to get device GPS location as a raw Google Maps URL
 function getLocation() {
     return new Promise((resolve) => {
         if (!navigator.geolocation) {
@@ -84,7 +98,7 @@ function getLocation() {
                 const { latitude, longitude } = position.coords;
                 console.log('GPS coordinates:', { latitude, longitude });
                 const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                resolve(mapsLink); // Return raw URL
+                resolve(mapsLink);
             },
             (error) => {
                 console.warn('Geolocation error:', error.message);
@@ -94,7 +108,7 @@ function getLocation() {
     });
 }
 
-async function generateDescription(imageData) {
+async function generateDescription(imageDataArray) {
     const descriptionText = document.getElementById('descriptionText');
     const descriptionBox = document.getElementById('descriptionBox');
     if (!descriptionText || !descriptionBox) {
@@ -102,52 +116,65 @@ async function generateDescription(imageData) {
         return;
     }
 
-    const base64Image = imageData.split(',')[1];
-    const requestBody = {
-        requests: [
-            {
-                image: { content: base64Image },
-                features: [
-                    { type: 'LABEL_DETECTION', maxResults: 10 },
-                    { type: 'OBJECT_LOCALIZATION', maxResults: 10 }
-                ]
-            }
-        ]
-    };
-
     try {
         // Get location first
         const location = await getLocation();
         console.log('Location retrieved:', location);
 
-        console.log('Sending request to Vision API...');
-        const response = await fetch(VISION_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
+        // Process each image with Vision API
+        const visionPromises = imageDataArray.map(async (imageData) => {
+            const base64Image = imageData.split(',')[1];
+            const requestBody = {
+                requests: [
+                    {
+                        image: { content: base64Image },
+                        features: [
+                            { type: 'LABEL_DETECTION', maxResults: 10 },
+                            { type: 'OBJECT_LOCALIZATION', maxResults: 10 }
+                        ]
+                    }
+                ]
+            };
+
+            console.log('Sending request to Vision API for an image...');
+            const response = await fetch(VISION_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+            }
+
+            const data = await response.json();
+            return data;
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API request failed with status ${response.status}: ${errorText}`);
-        }
+        const visionResults = await Promise.all(visionPromises);
+        console.log('All Vision API responses:', visionResults);
 
-        const data = await response.json();
-        console.log('Raw API response:', JSON.stringify(data, null, 2));
-
+        // Combine features and objects from all images
         let allFeatures = [];
-        let objectList = [];
-        if (data.responses && data.responses[0]) {
-            const labels = (data.responses[0].labelAnnotations || []).map(label => label.description.toLowerCase());
-            const objects = (data.responses[0].localizedObjectAnnotations || []).map(obj => obj.name.toLowerCase());
-            allFeatures = [...new Set([...labels, ...objects])];
-            objectList = objects.length > 0 ? objects : ['no specific objects detected'];
-            console.log('Detected features:', allFeatures);
-            console.log('Detected objects (English):', objectList);
-        } else {
-            console.warn('No valid response data from Vision API');
+        let allObjects = [];
+        visionResults.forEach((data, index) => {
+            if (data.responses && data.responses[0]) {
+                const labels = (data.responses[0].labelAnnotations || []).map(label => label.description.toLowerCase());
+                const objects = (data.responses[0].localizedObjectAnnotations || []).map(obj => obj.name.toLowerCase());
+                allFeatures.push(...labels, ...objects);
+                allObjects.push(...objects);
+                console.log(`Image ${index + 1} - Detected features:`, [...labels, ...objects]);
+                console.log(`Image ${index + 1} - Detected objects:`, objects);
+            }
+        });
+
+        allFeatures = [...new Set(allFeatures)]; // Remove duplicates
+        allObjects = [...new Set(allObjects)]; // Unique objects
+        if (allFeatures.length === 0) {
+            console.log('No features detected across images, using fallback');
             allFeatures = ['modern decor', 'bright lighting'];
-            objectList = ['generic decor'];
+            allObjects = ['generic decor'];
         }
 
         const languages = {
@@ -162,8 +189,9 @@ async function generateDescription(imageData) {
                 },
                 template: (catchy, roomType, features, objects, loc) =>
                     `${catchy}\n\n` +
-                    `Welcome to this stunning ${roomType}, a perfect blend of style and comfort. Featuring ${features}, ` +
-                    `this space is designed for both relaxation and functionality.\n\n` +
+                    `Welcome to this stunning ${roomType}, a beautifully crafted space that blends style and comfort seamlessly. ` +
+                    `With ${features}, this room offers a versatile environment perfect for relaxation, work, or entertaining guests. ` +
+                    `Multiple perspectives reveal a well-appointed area showcasing ${objects.length} unique elements.\n\n` +
                     `Furniture:\n- ${objects.join('\n- ')}\n\n` +
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
@@ -182,8 +210,9 @@ async function generateDescription(imageData) {
                 },
                 template: (catchy, roomType, features, objects, loc) =>
                     `${catchy}\n\n` +
-                    `Chào mừng đến với ${roomType} tuyệt đẹp này, sự kết hợp hoàn hảo giữa phong cách và sự thoải mái. Nổi bật với ${features}, ` +
-                    `không gian này được thiết kế cho cả sự thư giãn và tiện nghi.\n\n` +
+                    `Chào mừng đến với ${roomType} tuyệt đẹp này, một không gian được chế tác tinh tế kết hợp hoàn hảo giữa phong cách và sự thoải mái. ` +
+                    `Với ${features}, căn phòng này mang đến một môi trường linh hoạt, lý tưởng để thư giãn, làm việc hoặc tiếp đãi khách. ` +
+                    `Nhiều góc nhìn cho thấy một khu vực được trang bị tốt với ${objects.length} yếu tố độc đáo.\n\n` +
                     `Nội thất bao gồm:\n- ${objects.join('\n- ')}\n\n` +
                     `Chi tiết bất động sản:\n` +
                     `- Giá: $400/tháng (có thể thương lượng)\n` +
@@ -205,8 +234,8 @@ async function generateDescription(imageData) {
             const featureOptions = langData.featureMap[roomKey] || langData.featureMap.default;
             const featureString = featureOptions.slice(0, 3).join(', ');
             const translatedObjects = lang === 'vi'
-                ? objectList.map(obj => objectTranslations[obj] || obj)
-                : objectList;
+                ? allObjects.map(obj => objectTranslations[obj] || obj)
+                : allObjects;
             console.log(`Translated objects for ${lang}:`, translatedObjects);
             return langData.template(catchy, roomType, featureString, translatedObjects, location);
         };
@@ -261,7 +290,7 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        const photoUrl = document.getElementById('photoPreview').src;
+        const photoUrl = document.getElementById('photoPreview').src; // Note: Only shares first image URL
         const shareText = getDescription();
         const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}"e=${encodeURIComponent(shareText)}`;
         window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
