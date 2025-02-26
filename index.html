@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hausto - Web</title>
+    <title>RoomSnap - Web</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Hausto</h1>
+            <h1>RoomSnap</h1>
             <button id="themeToggle" aria-label="Toggle theme">
-                <span class="icon">☀️</span> <!-- Sun for light mode -->
+                <span class="icon">☀️</span>
             </button>
         </div>
-        <p>Upload a photo of your apartment to get an instant description!</p>
+        <p>Upload photos of your apartment to get an instant description!</p>
         
-        <input type="file" id="photoInput" accept="image/*">
+        <input type="file" id="photoInput" accept="image/*" multiple>
         <div id="previewContainer">
-            <img id="photoPreview" src="" alt="Preview" style="display: none;">
+            <!-- Previews will be dynamically added here -->
         </div>
         
         <div id="descriptionBox" style="display: none;">
@@ -27,7 +27,7 @@
                 <option value="en">English</option>
                 <option value="vi">Vietnamese</option>
             </select>
-            <textarea id="descriptionText" rows="8" cols="50"></textarea>
+            <textarea id="descriptionText" rows="10" cols="50"></textarea>
             <button id="saveEditButton">Save Edits</button>
             <button id="shareButton">Share to Facebook</button>
         </div>
