@@ -14,9 +14,14 @@
                 <span class="icon">☀️</span>
             </button>
         </div>
-        <p>Upload photos of your apartment to get an instant description!</p>
+        <div id="authContainer">
+            <button id="googleSignIn" style="display: none;">Sign In with Google</button>
+            <button id="signOut" style="display: none;">Sign Out</button>
+            <p id="userInfo"></p>
+        </div>
+        <p id="uploadPrompt">Upload photos of your apartment to get an instant description!</p>
         
-        <input type="file" id="photoInput" accept="image/*" multiple>
+        <input type="file" id="photoInput" accept="image/*" multiple disabled>
         <div id="previewContainer">
             <!-- Previews will be dynamically added here -->
         </div>
@@ -32,6 +37,8 @@
             <button id="shareButton">Share to Facebook</button>
         </div>
     </div>
+    <!-- Google Sign-In API script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="script.js"></script>
 </body>
 </html>
