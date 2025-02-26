@@ -397,24 +397,15 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        // Try FB app intent first, fall back to mobile composer
-        const fbAppUrl = 'fb://post'; // Intent for FB app to open a new post
-        const fbMobileUrl = 'https://m.facebook.com/composer'; // Mobile web composer
-        console.log('Attempting to open Facebook post via app or mobile site');
+        // Open mobile Facebook composer directly
+        const fbShareUrl = 'https://m.facebook.com/sharer.php';
+        console.log('Opening mobile Facebook composer, URL:', fbShareUrl);
         try {
-            // Attempt to open via app
-            window.location.href = fbAppUrl;
-            // Fallback to mobile site after a short delay if app not installed
-            setTimeout(() => {
-                console.log('Falling back to mobile Facebook composer, URL:', fbMobileUrl);
-                window.open(fbMobileUrl, '_blank');
-            }, 1000);
-            console.log('Facebook post dialog triggered');
+            window.open(fbShareUrl, '_blank');
+            console.log('Facebook composer opened successfully');
         } catch (error) {
-            console.error('Failed to open Facebook post dialog:', error);
-            displayError('Failed to open Facebook post dialog. Check console for details.');
-            // Fallback immediately if error occurs
-            window.open(fbMobileUrl, '_blank');
+            console.error('Failed to open Facebook composer:', error);
+            displayError('Failed to open Facebook composer. Check console for details.');
         }
     };
 }
