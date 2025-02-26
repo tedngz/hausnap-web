@@ -27,7 +27,6 @@ window.addEventListener('load', () => {
         themeIcon.textContent = '☀️';
     }
 
-    // Request location permission on load
     if (navigator.geolocation) {
         console.log('Requesting location permission on page load...');
         navigator.geolocation.getCurrentPosition(
@@ -37,14 +36,13 @@ window.addEventListener('load', () => {
         );
     }
 
-    // Initialize Google Sign-In
     google.accounts.id.initialize({
         client_id: CLIENT_ID,
         callback: handleCredentialResponse
     });
     google.accounts.id.renderButton(
         document.getElementById('googleSignIn'),
-        { theme: 'outline', size: 'large' }
+        { theme: 'outline', size: 'medium', text: 'signin_with' }
     );
 
     const savedToken = localStorage.getItem('googleToken');
@@ -79,22 +77,24 @@ function parseJwt(token) {
 
 function updateAuthUI(isSignedIn) {
     const googleSignIn = document.getElementById('googleSignIn');
+    const userProfile = document.getElementById('userProfile');
+    const userIcon = document.getElementById('userIcon');
     const signOut = document.getElementById('signOut');
-    const userInfo = document.getElementById('userInfo');
     const photoInput = document.getElementById('photoInput');
-    const uploadPrompt = document.getElementById('uploadPrompt');
+    const uploadPrompt = document.querySelector('.prompt');
 
     if (isSignedIn) {
         googleSignIn.style.display = 'none';
-        signOut.style.display = 'inline-block';
+        userProfile.style.display = 'flex';
         const profile = parseJwt(userToken);
-        userInfo.textContent = `Signed in as ${profile.name} (${profile.email})`;
+        userIcon.src = profile.picture;
+        userIcon.title = `${profile.name} (${profile.email})`;
         photoInput.disabled = false;
         uploadPrompt.textContent = 'Upload photos of your apartment to get an instant description!';
     } else {
         googleSignIn.style.display = 'inline-block';
-        signOut.style.display = 'none';
-        userInfo.textContent = '';
+        userProfile.style.display = 'none';
+        userIcon.src = '';
         photoInput.disabled = true;
         uploadPrompt.textContent = 'Please sign in to upload photos and generate descriptions.';
     }
@@ -300,7 +300,7 @@ async function generateDescription(imageDataArray) {
                     `Property Details:\n` +
                     `- Price: $400/month (negotiable)\n` +
                     `- Room Size: Approximately 30 m²\n` +
-                    `- Amenities: High-speed Wi-Fi, central heating/cooling, nearby parking\n` +
+                    `- Amenities: High-speed Wi-Fi, cooling, nearby parking\n` +
                     `- Location: ${loc}`
             },
             vi: {
@@ -319,9 +319,9 @@ async function generateDescription(imageDataArray) {
                     `Nhiều góc nhìn cho thấy một khu vực được trang bị tốt với ${objects.length} yếu tố độc đáo.\n\n` +
                     `Nội thất bao gồm:\n- ${objects.join('\n- ')}\n\n` +
                     `Chi tiết bất động sản:\n` +
-                    `- Giá: $400/tháng (có thể thương lượng)\n` +
+                    `- Giá: 10 triệu/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa/lò sưởi trung tâm, bãi đỗ xe gần đó\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, bãi đỗ xe gần đó\n` +
                     `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
