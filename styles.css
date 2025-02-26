@@ -13,9 +13,9 @@ body.dark-mode {
 
 .container {
     max-width: 900px;
-    width: 90%;
-    margin: 20px auto;
-    padding: 20px;
+    width: 95%; /* Slightly wider on mobile */
+    margin: 10px auto;
+    padding: 15px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -31,7 +31,7 @@ body.dark-mode .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 }
 
@@ -41,7 +41,7 @@ body.dark-mode .header {
 
 h1 {
     color: #333;
-    font-size: 1.8rem;
+    font-size: clamp(1.5rem, 5vw, 1.8rem); /* Scales with viewport */
     margin: 0;
     font-weight: 600;
 }
@@ -53,7 +53,7 @@ body.dark-mode h1 {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 #themeToggle {
@@ -69,6 +69,7 @@ body.dark-mode h1 {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation; /* Improves touch response */
 }
 
 #themeToggle:hover {
@@ -87,11 +88,11 @@ body.dark-mode #themeToggle:hover {
 #authContainer {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .auth-btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -99,6 +100,7 @@ body.dark-mode #themeToggle:hover {
     background-color: #4285f4;
     color: white;
     transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation;
 }
 
 .auth-btn:hover {
@@ -117,12 +119,12 @@ body.dark-mode .auth-btn:hover {
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .user-icon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #fff;
@@ -142,6 +144,7 @@ body.dark-mode .user-icon {
     background-color: #f44336;
     color: white;
     transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation;
 }
 
 .signout-btn:hover {
@@ -158,13 +161,13 @@ body.dark-mode .signout-btn:hover {
 }
 
 .app-content {
-    padding-top: 20px;
+    padding-top: 15px;
 }
 
 .prompt {
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 3vw, 1rem);
     color: #666;
-    margin: 0 0 15px;
+    margin: 0 0 10px;
 }
 
 body.dark-mode .prompt {
@@ -172,14 +175,14 @@ body.dark-mode .prompt {
 }
 
 input[type="file"] {
-    margin: 15px 0;
+    margin: 10px 0;
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     box-sizing: border-box;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
     transition: border-color 0.3s;
 }
 
@@ -202,12 +205,12 @@ body.dark-mode input[type="file"] {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 .preview-container img {
-    max-width: 150px;
+    max-width: clamp(100px, 30vw, 150px); /* Scales on mobile */
     height: auto;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -219,8 +222,8 @@ body.dark-mode input[type="file"] {
 }
 
 .description-box {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 15px;
+    padding: 12px;
     background: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -232,9 +235,9 @@ body.dark-mode .description-box {
 }
 
 .description-box h3 {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     color: #333;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 3vw, 1.2rem);
 }
 
 body.dark-mode .description-box h3 {
@@ -242,12 +245,14 @@ body.dark-mode .description-box h3 {
 }
 
 .sleek-select {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding: 6px;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
     border-radius: 8px;
     border: 1px solid #ddd;
     background-color: #fff;
+    width: 100%;
+    max-width: 200px;
     transition: border-color 0.3s;
 }
 
@@ -263,13 +268,13 @@ body.dark-mode .sleek-select {
 
 .sleek-textarea {
     width: 100%;
-    padding: 10px;
-    font-size: 1rem;
+    padding: 8px;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
     border: 1px solid #ddd;
     border-radius: 8px;
     resize: vertical;
     box-sizing: border-box;
-    min-height: 200px;
+    min-height: clamp(150px, 40vw, 200px);
     background-color: #fff;
     color: #333;
     transition: border-color 0.3s;
@@ -287,7 +292,7 @@ body.dark-mode .sleek-textarea {
 
 .button-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: flex-end;
     margin-top: 10px;
 }
@@ -297,10 +302,12 @@ body.dark-mode .sleek-textarea {
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     background-color: #4CAF50;
     color: white;
     transition: background-color 0.3s, transform 0.2s;
+    touch-action: manipulation;
+    min-width: 100px;
 }
 
 body.dark-mode .sleek-btn {
@@ -333,25 +340,30 @@ body.dark-mode .share-btn:hover {
 }
 
 @media (max-width: 600px) {
-    h1 {
-        font-size: 1.5rem;
-    }
-    .prompt {
-        font-size: 0.9rem;
-    }
     .container {
-        padding: 15px;
-        margin: 10px auto;
+        padding: 10px;
+        margin: 5px auto;
     }
-    .preview-container img {
-        max-width: 100px;
+    .header {
+        flex-direction: row;
+        align-items: center;
+        padding-bottom: 8px;
     }
-    .sleek-select {
-        max-width: none;
+    .header-right {
+        gap: 8px;
     }
-    .sleek-textarea {
-        font-size: 0.9rem;
-        min-height: 150px;
+    #themeToggle {
+        width: 32px;
+        height: 32px;
+        font-size: 1.3rem;
+    }
+    .auth-btn, .signout-btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    .user-icon {
+        width: 28px;
+        height: 28px;
     }
     .button-group {
         flex-direction: column;
@@ -361,26 +373,13 @@ body.dark-mode .share-btn:hover {
         width: 100%;
         margin: 5px 0;
     }
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .header-right {
-        margin-top: 10px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
 }
 
 @media (max-width: 400px) {
-    h1 {
-        font-size: 1.2rem;
+    .header {
+        flex-wrap: wrap;
     }
-    .prompt {
-        font-size: 0.8rem;
-    }
-    .sleek-textarea {
-        font-size: 0.8rem;
+    .header-right {
+        margin-top: 5px;
     }
 }
