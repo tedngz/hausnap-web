@@ -15,7 +15,7 @@ themeToggle.addEventListener('click', () => {
     themeIcon.textContent = isDarkMode ? '🌙' : '☀️';
 });
 
-// Load saved theme or system preference
+// Load saved theme or system preference and request location permission early
 window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -23,6 +23,22 @@ window.addEventListener('load', () => {
         themeIcon.textContent = '🌙';
     } else {
         themeIcon.textContent = '☀️';
+    }
+
+    // Request location permission on page load to ensure prompt on mobile
+    if (navigator.geolocation) {
+        console.log('Requesting location permission on page load...');
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                console.log('Initial location permission granted:', position.coords);
+            },
+            (error) => {
+                console.warn('Initial location permission denied or failed:', error.message);
+            },
+            { timeout: 10000 } // Optional: timeout after 10 seconds
+        );
+    } else {
+        console.warn('Geolocation not supported by this browser');
     }
 });
 
@@ -33,6 +49,7 @@ function handlePhotoUpload(event) {
         console.log('No files selected');
         return;
     }
+    console.log(`Number of files selected: ${files.length}`);
 
     const previewContainer = document.getElementById('previewContainer');
     if (!previewContainer) {
@@ -43,23 +60,29 @@ function handlePhotoUpload(event) {
 
     const imageDataPromises = Array.from(files).map(file => {
         return new Promise((resolve) => {
+            console.log(`Reading file: ${file.name}`);
             const reader = new FileReader();
             reader.onload = function(e) {
+                console.log(`File ${file.name} read successfully`);
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.alt = 'Preview';
                 previewContainer.appendChild(img);
                 resolve(e.target.result);
             };
+            reader.onerror = function(e) {
+                console.error(`Error reading file ${file.name}:`, e);
+            };
             reader.readAsDataURL(file);
         });
     });
 
     Promise.all(imageDataPromises).then(imageDataArray => {
-        console.log('All files read successfully');
+        console.log('All files read successfully:', imageDataArray.length, 'images');
         generateDescription(imageDataArray);
     }).catch(error => {
         console.error('Error reading files:', error);
+        displayError('Error: Couldn’t process uploaded images. Check console.');
     });
 }
 
@@ -96,16 +119,29 @@ function getLocation() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                console.log('GPS coordinates:', { latitude, longitude });
+                console.log('GPS coordinates retrieved:', { latitude, longitude });
                 const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
                 resolve(mapsLink);
             },
             (error) => {
                 console.warn('Geolocation error:', error.message);
                 resolve('Location unavailable');
-            }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // Optimize for mobile
         );
     });
+}
+
+// Helper function to display errors in the UI
+function displayError(message) {
+    const descriptionText = document.getElementById('descriptionText');
+    const descriptionBox = document.getElementById('descriptionBox');
+    if (descriptionText && descriptionBox) {
+        descriptionText.value = message;
+        descriptionBox.style.display = 'block';
+    } else {
+        console.error('Cannot display error - UI elements missing');
+    }
 }
 
 async function generateDescription(imageDataArray) {
@@ -117,12 +153,12 @@ async function generateDescription(imageDataArray) {
     }
 
     try {
-        // Get location first
+        // Get location
         const location = await getLocation();
         console.log('Location retrieved:', location);
 
         // Process each image with Vision API
-        const visionPromises = imageDataArray.map(async (imageData) => {
+        const visionPromises = imageDataArray.map(async (imageData, index) => {
             const base64Image = imageData.split(',')[1];
             const requestBody = {
                 requests: [
@@ -136,7 +172,7 @@ async function generateDescription(imageDataArray) {
                 ]
             };
 
-            console.log('Sending request to Vision API for an image...');
+            console.log(`Sending request to Vision API for image ${index + 1}...`);
             const response = await fetch(VISION_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -145,10 +181,11 @@ async function generateDescription(imageDataArray) {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+                throw new Error(`API request for image ${index + 1} failed with status ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
+            console.log(`Vision API response for image ${index + 1}:`, JSON.stringify(data, null, 2));
             return data;
         });
 
