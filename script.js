@@ -2,8 +2,8 @@
 const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
 
-// Replace with your actual Google Client ID from Google Cloud Console
-const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com'; // Update this!
+// Google Client ID
+const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com';
 
 const themeToggle = document.getElementById('themeToggle');
 const body = document.body;
@@ -190,7 +190,7 @@ function getLocation() {
             (position) => {
                 const { latitude, longitude } = position.coords;
                 console.log('GPS coordinates retrieved:', { latitude, longitude });
-                const mapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                const mapsLink = `https://www.facebook.com/sharer/sharer.php?q=${latitude},${longitude}`;
                 resolve(mapsLink);
             },
             (error) => {
@@ -304,7 +304,7 @@ async function generateDescription(imageDataArray) {
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Sống trong giấc mơ với không gian này!"],
+                catchyPhrases: ["Trải nghiệm không gian sống lý tưởng!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -321,7 +321,7 @@ async function generateDescription(imageDataArray) {
                     `Chi tiết bất động sản:\n` +
                     `- Giá: 10 triệu/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, vệ sinh chung, bãi đỗ xe gần đó\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, dịch vụ vệ sinh, bãi đỗ xe gần đó\n` +
                     `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
@@ -397,12 +397,14 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        // Open an empty Facebook share dialog; user must paste the description manually
-        const fbShareUrl = 'https://www.facebook.com/sharer/sharer.php';
-        console.log('Opening empty Facebook share dialog, URL:', fbShareUrl);
+        // Use dialog/feed for a mobile-friendly empty share dialog
+        const fbShareUrl = 'https://www.facebook.com/dialog/feed?app_id=145634995501895&display=popup';
+        console.log('Opening mobile-friendly Facebook share dialog, URL:', fbShareUrl);
         try {
             window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
             console.log('Facebook share dialog opened successfully');
+            // Optional: Prompt user to paste content
+            // alert('Paste your copied description into the Facebook post!');
         } catch (error) {
             console.error('Failed to open share dialog:', error);
             displayError('Failed to open Facebook share dialog. Check console for details.');
