@@ -1,8 +1,9 @@
-document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
-
 // Google Vision API key
 const VISION_API_KEY = 'AIzaSyBLhYy2wvSIqtOn3VOh98CTJHN6mp48MMI';
 const VISION_API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
+
+// Google Sign-In Client ID (replace with your own from Google Cloud Console)
+const CLIENT_ID = '1076710080620-e5cbtvmb1u7r93j64s17qif3hv767ac4.apps.googleusercontent.com'; // Get this from Google Cloud Console
 
 // Theme toggle setup
 const themeToggle = document.getElementById('themeToggle');
@@ -15,7 +16,8 @@ themeToggle.addEventListener('click', () => {
     themeIcon.textContent = isDarkMode ? '🌙' : '☀️';
 });
 
-// Load saved theme or system preference and request location permission early
+// Load saved theme or system preference and initialize Google Sign-In
+let userToken = null;
 window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -25,24 +27,102 @@ window.addEventListener('load', () => {
         themeIcon.textContent = '☀️';
     }
 
-    // Request location permission on page load to ensure prompt on mobile
+    // Request location permission on page load
     if (navigator.geolocation) {
         console.log('Requesting location permission on page load...');
         navigator.geolocation.getCurrentPosition(
-            (position) => {
-                console.log('Initial location permission granted:', position.coords);
-            },
-            (error) => {
-                console.warn('Initial location permission denied or failed:', error.message);
-            },
-            { timeout: 10000 } // Optional: timeout after 10 seconds
+            (position) => console.log('Initial location permission granted:', position.coords),
+            (error) => console.warn('Initial location permission denied or failed:', error.message),
+            { timeout: 10000 }
         );
     } else {
         console.warn('Geolocation not supported by this browser');
     }
+
+    // Initialize Google Sign-In
+    google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+        document.getElementById('googleSignIn'),
+        { theme: 'outline', size: 'large' } // Customize button appearance
+    );
+
+    // Check if already signed in
+    const savedToken = localStorage.getItem('googleToken');
+    if (savedToken) {
+        userToken = savedToken;
+        updateAuthUI(true);
+    } else {
+        updateAuthUI(false);
+    }
 });
 
+// Handle Google Sign-In response
+function handleCredentialResponse(response) {
+    if (response.credential) {
+        userToken = response.credential;
+        localStorage.setItem('googleToken', userToken);
+        const profile = parseJwt(userToken);
+        console.log('User signed in:', profile);
+        updateAuthUI(true);
+    } else {
+        console.error('Sign-in failed:', response);
+    }
+}
+
+// Parse JWT token to get user info
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+}
+
+// Update UI based on auth state
+function updateAuthUI(isSignedIn) {
+    const googleSignIn = document.getElementById('googleSignIn');
+    const signOut = document.getElementById('signOut');
+    const userInfo = document.getElementById('userInfo');
+    const photoInput = document.getElementById('photoInput');
+    const uploadPrompt = document.getElementById('uploadPrompt');
+
+    if (isSignedIn) {
+        googleSignIn.style.display = 'none';
+        signOut.style.display = 'inline-block';
+        const profile = parseJwt(userToken);
+        userInfo.textContent = `Signed in as ${profile.name} (${profile.email})`;
+        photoInput.disabled = false;
+        uploadPrompt.textContent = 'Upload photos of your apartment to get an instant description!';
+    } else {
+        googleSignIn.style.display = 'inline-block';
+        signOut.style.display = 'none';
+        userInfo.textContent = '';
+        photoInput.disabled = true;
+        uploadPrompt.textContent = 'Please sign in to upload photos and generate descriptions.';
+    }
+}
+
+// Sign out function
+document.getElementById('signOut').addEventListener('click', () => {
+    userToken = null;
+    localStorage.removeItem('googleToken');
+    google.accounts.id.disableAutoSelect();
+    console.log('User signed out');
+    updateAuthUI(false);
+});
+
+// Photo upload handler (restricted to signed-in users)
 function handlePhotoUpload(event) {
+    if (!userToken) {
+        console.log('User not signed in, upload blocked');
+        displayError('Please sign in to upload photos.');
+        return;
+    }
+
     console.log('Photo upload triggered');
     const files = event.target.files;
     if (!files || files.length === 0) {
@@ -127,7 +207,7 @@ function getLocation() {
                 console.warn('Geolocation error:', error.message);
                 resolve('Location unavailable');
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // Optimize for mobile
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
     });
 }
@@ -153,11 +233,10 @@ async function generateDescription(imageDataArray) {
     }
 
     try {
-        // Get location
+        console.log('User is signed in, generating description...');
         const location = await getLocation();
         console.log('Location retrieved:', location);
 
-        // Process each image with Vision API
         const visionPromises = imageDataArray.map(async (imageData, index) => {
             const base64Image = imageData.split(',')[1];
             const requestBody = {
@@ -192,7 +271,6 @@ async function generateDescription(imageDataArray) {
         const visionResults = await Promise.all(visionPromises);
         console.log('All Vision API responses:', visionResults);
 
-        // Combine features and objects from all images
         let allFeatures = [];
         let allObjects = [];
         visionResults.forEach((data, index) => {
@@ -206,8 +284,8 @@ async function generateDescription(imageDataArray) {
             }
         });
 
-        allFeatures = [...new Set(allFeatures)]; // Remove duplicates
-        allObjects = [...new Set(allObjects)]; // Unique objects
+        allFeatures = [...new Set(allFeatures)];
+        allObjects = [...new Set(allObjects)];
         if (allFeatures.length === 0) {
             console.log('No features detected across images, using fallback');
             allFeatures = ['modern decor', 'bright lighting'];
@@ -315,8 +393,7 @@ async function generateDescription(imageDataArray) {
         setupShareButton(() => currentDescription);
     } catch (error) {
         console.error('Error generating description:', error);
-        descriptionText.value = 'Error: Couldn’t generate description. Check console for details.';
-        descriptionBox.style.display = 'block';
+        displayError('Error: Couldn’t generate description. Check console for details.');
     }
 }
 
@@ -327,7 +404,7 @@ function setupShareButton(getDescription) {
         return;
     }
     shareButton.onclick = function() {
-        const photoUrl = document.getElementById('photoPreview').src; // Note: Only shares first image URL
+        const photoUrl = document.getElementById('photoPreview').src;
         const shareText = getDescription();
         const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(photoUrl)}"e=${encodeURIComponent(shareText)}`;
         window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
