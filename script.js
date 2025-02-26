@@ -283,7 +283,7 @@ async function generateDescription(imageDataArray) {
 
         const languages = {
             en: {
-                catchyPhrases: ["Live the dream in this stunning ${roomType}!"],
+                catchyPhrases: ["Live the dream in this stunning" `${roomType}`"!"],
                 roomTypes: { room: 'room', bedroom: 'bedroom', kitchen: 'kitchen', livingRoom: 'living room' },
                 featureMap: {
                     bed: ['luxurious king-sized bed', 'spacious walk-in closet', 'soft recessed lighting'],
@@ -304,7 +304,7 @@ async function generateDescription(imageDataArray) {
                     `- Location: ${loc}`
             },
             vi: {
-                catchyPhrases: ["Sống trong giấc mơ với ${roomType} này!"],
+                catchyPhrases: ["Sống trong giấc mơ với" `${roomType}` "này!"],
                 roomTypes: { room: 'phòng', bedroom: 'phòng ngủ', kitchen: 'nhà bếp', livingRoom: 'phòng khách' },
                 featureMap: {
                     bed: ['giường king-size sang trọng', 'tủ quần áo rộng', 'đèn chiếu sáng dịu'],
@@ -321,7 +321,7 @@ async function generateDescription(imageDataArray) {
                     `Chi tiết bất động sản:\n` +
                     `- Giá: $400/tháng (có thể thương lượng)\n` +
                     `- Diện tích phòng: Khoảng 30 m²\n` +
-                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, vệ sinh chung, bãi đỗ xe gần đó\n` +
+                    `- Tiện ích: Wi-Fi tốc độ cao, điều hòa, dọn vệ sinh chung, bãi đỗ xe gần đó\n` +
                     `- Vị trí: ${loc === 'Location unavailable' ? 'Vị trí không khả dụng' : loc}`
             }
         };
@@ -392,16 +392,21 @@ function setupShareButton(getDescription) {
         console.error('Share button not found');
         return;
     }
-    shareButton.onclick = function() {
+    shareButton.onclick = async function() {
         const shareText = getDescription();
-        // Using 'quote' parameter for pre-filled description; 'u' needs a public URL
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}`;
-        console.log('Share button clicked, URL:', fbShareUrl);
         try {
+            // Copy description to clipboard
+            await navigator.clipboard.writeText(shareText);
+            console.log('Description copied to clipboard:', shareText);
+
+            // Open Facebook share dialog with pre-filled description
+            const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}`;
+            console.log('Opening Facebook share dialog, URL:', fbShareUrl);
             window.open(fbShareUrl, '_blank', 'width=600,height=400,scrollbars=yes');
-            console.log('Share window opened successfully');
+            console.log('Facebook share dialog opened successfully');
+            alert('Description copied! Paste it (Ctrl+V or tap-and-paste) into the Facebook dialog.');
         } catch (error) {
-            console.error('Failed to open share window:', error);
+            console.error('Failed to copy or open share dialog:', error);
             displayError('Failed to share to Facebook. Check console for details.');
         }
     };
